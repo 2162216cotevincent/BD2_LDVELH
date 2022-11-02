@@ -1,0 +1,8 @@
+Doit être présent dans l'analyse:
+-Texte du livre divisé en chapitres
+-Possibilité d'avoir plusieur livres
+-Chaque livres a la même fiche de personnage
+-Fiche du personnage (feuille d'aventure)
+-sections disciplines Kai et Armes, doivent provenir d'une liste de choix
+-Pas de système de règles
+-Système pour enregistrer la progression.
