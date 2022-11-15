@@ -6,3 +6,9 @@ Doit être présent dans l'analyse:
 -sections disciplines Kai et Armes, doivent provenir d'une liste de choix
 -Pas de système de règles
 -Système pour enregistrer la progression.
+
+
+
+Pour lancer Qt designer:
+git bash dans le dossier de code
+"designer"
