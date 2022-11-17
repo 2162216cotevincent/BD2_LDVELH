@@ -12,3 +12,19 @@ Doit être présent dans l'analyse:
 Pour lancer Qt designer:
 git bash dans le dossier de code
 "designer"
+
+idées:
+créer une usager joueur qui peut seulement naviguer au travers du livre. Autrement dit,
+il choisit sont nom une seule fois?
+
+idée triggers:
+doit avoir un nom/ficher de perso pour naviguer.
+doit choisir un livre avant de naviguer.
+
+
+
+À mettre dans fiche perso:
+Discipline KAi (6)
+arme (2)
+
+objets dans inventaire (des carrés de texte?)
