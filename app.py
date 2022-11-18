@@ -43,8 +43,74 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.label_partieSauvegarde.clear()
         self.afficher_charger_partie()
         self.boutonSauvegarde.clicked.connect(self.sauvegarder)
+        self.pushButton_2.clicked.connect(self.supprimer)
+        self.pushButton.clicked.connect(self.charger)
+
+    def afficher_chapitre(self):
+        mycursor = mydb.cursor()
+        self.textBrowser.clear
+        texte = ("SELECT texte FROM chapitre WHERE no_chapitre = '%s'")
+        #Il faut mettre une virgule après parce que ce doit être un TUPLE, et non un int.
+        valeur = (self.chapitreActuel,)
+
+
+        try:
+            mycursor.execute(texte,valeur)
+        except ValueError:
+            print("Damn! Il y a eu une erreur lors de l'exécution de la requête.")
+
+        #On va chercher les résultats.
+        myresult = mycursor.fetchall()
+        self.textBrowser.setText(myresult[0][0])
+
+    def charger(self):
+        partieChoisie = str(self.comboBox_3.currentText())
+        mycursor = mydb.cursor()
+        texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
+        valueIdFiche = (str(partieChoisie),)
+        try:
+            mycursor.execute(texteIdFiche,valueIdFiche)
+        except ValueError:
+            print("Erreur lors de la requête.")
+        myresult = mycursor.fetchall()
+
+        idFiche = myresult[0][0]
+
+        texte = "SELECT id_chapitre FROM sauvegarde WHERE id_fiche = (%s)"
+        value = (str(idFiche),)
+        try:
+            mycursor.execute(texte,value)
+        except ValueError:
+            print("Erreur lors de la requête.")
+        myresult = mycursor.fetchall()
+
+        self.chapitreActuel = myresult[0][0]
+
+        self.afficher_no_chapitre()
+        self.afficher_disciplines_kai()  #À ARRANGER.
+        self.afficher_nom_perso(self.comboBox_3.currentText())
+        self.afficher_chapitre()
+        self.afficher_choix_chapitre(self.chapitreActuel)
+
+    def supprimer(self):
+        mycursor = mydb.cursor()
+        texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
+        valueIdFiche = (str(self.label_nomPerso.text()),)
+        try:
+            mycursor.execute(texteIdFiche,valueIdFiche)
+        except ValueError:
+            print("Erreur lors de la requête.")
+        myresult = mycursor.fetchall()
+
+        idFiche = myresult[0][0]
+        texte = "DELETE FROM sauvegarde WHERE id_fiche = (%s)"
+        value = (str(idFiche),)
+        try:
+            mycursor.execute(texte,value)
+            
+        except ValueError:
+            print("Erreur lors de la requête.")
         
-    
 
 
     
@@ -71,10 +137,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except ValueError:
             print("Erreur lors de la sauvegarde")
         self.label_partieSauvegarde.setText("Partie Sauvegardée.")
+        
+        self.afficher_charger_partie()
 
         
-
-
 
     def afficher_charger_partie(self):
         mycursor = mydb.cursor()
@@ -82,14 +148,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         texte = "SELECT sauvegarde.id, nom_personnage FROM sauvegarde INNER JOIN fiche_personnage ON sauvegarde.id_fiche = fiche_personnage.id ORDER BY id"
         try:
             mycursor.execute(texte)
+            print("Requête réussi!")
         except ValueError:
             print("Damn! Il y a eu une erreur lors de l'exécution de la requête.")
         
         myresult = mycursor.fetchall()
         
         #À COMPLÉTER
-        for(nom_discipline) in myresult:
-            self.comboBox_3.addItem(nom_discipline[0])
+        for(nom_personnage) in myresult:
+            self.comboBox_3.addItem(str(nom_personnage[1]))
 
         
 
