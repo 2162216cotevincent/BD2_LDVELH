@@ -10,9 +10,14 @@ from MainWindow import Ui_MainWindow
 try:
     mydb = mysql.connector.connect(
         host="localhost",
-        user="root",
-        password="",
+        user="joueur",
+        password="4444",
         database="ldvelh"
+
+        #host="localhost",
+        #user="root",
+        #password="",
+        #database="ldvelh"
     )
     print("Connexion à la base de données réussi")
 except ValueError:
@@ -34,10 +39,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         # On va créer la fenêtre avec cette commande
         self.setupUi(self)
-        # On connecter un événement sur le line edit
-        # self.editIdCitoyen.returnPressed.connect(self.test)
 
-        #Il ne fallait pas mettre prochain_chapitre avec les parenthèses, car cela l'exécute tout de suite, c'est n'est pas ce que l'on veut.
+
+        #Il ne faut pas mettre les parenthèse lorsqu'on connecte les fonction,
+        #car cela les exécute tout de suite, c'est n'est pas ce que l'on veut.
         self.pushButton_3.clicked.connect(self.prochain_chapitre)
         self.pushButton_nouvellePartie.clicked.connect(self.nouvellePartie)
         self.label_erreurCreationPartie.clear()
