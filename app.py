@@ -1,14 +1,8 @@
 import sys
 import mysql.connector
 from PyQt5.QtWidgets import QApplication, QMainWindow
-# Importer la classe Ui_MainWindow du fichier MainWindow.py
 from MainWindow import Ui_MainWindow
 
-
-
-#QUESTIONS:
-#Comment régler le bug de l'appel de la fonction self.pushbutton3
-#Comment récupérer l'information du chapitre actuel?
 
 
 
@@ -27,8 +21,15 @@ except ValueError:
 # En paramêtre de la classe MainWindow on va hériter des fonctionnalités
 # de QMainWindow et de notre interface Ui_MainWindow
 class MainWindow(QMainWindow, Ui_MainWindow):
+
+
+    #Variable globale pour savoir en tout temps à quel chapitre nous sommes rendu.
+    #Cette variable est souvent modifiée.
     chapitreActuel = 0
 
+
+
+    #Classe principales.
     def __init__(self, *args, obj=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
         # On va créer la fenêtre avec cette commande
@@ -48,12 +49,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.charger)
         self.afficher_livre()
 
+
+
+
+
+
+
+    #Cette fonction affiche le livre actuel dans lequel on joue.
     def afficher_livre(self):
         mycursor = mydb.cursor()
         mycursor.execute("SELECT nom FROM livre")
         myresult = mycursor.fetchall()
         self.comboBox.addItem(myresult[0][0])
     
+
+
+
+
+
+
+
+
+    #Lorsqu'une partie est chargé, affiche les disciplines Kaï choisit pour notre personnage
     def afficher_discipline(self):
         mycursor = mydb.cursor()
         texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
@@ -76,6 +93,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Damn! Il y a eu une erreur lors de l'exécution de la requête.")
         
         myresult = mycursor.fetchall()
+        #On doit vider le comboBox avant pour qu'on ne puisse plus choisir l'arme par la suite. Aussi parce que sinon
+        #les items dans la comboBox s'accumule à chaque chargement de partie.
+        self.comboBox_4.clear()
+        self.comboBox_5.clear()
+        self.comboBox_6.clear()
+        self.comboBox_7.clear()
+        self.comboBox_8.clear()
+        self.comboBox_9.clear()
         self.comboBox_4.addItem(myresult[0][0])
         self.comboBox_5.addItem(myresult[1][0])
         self.comboBox_6.addItem(myresult[2][0])
@@ -83,9 +108,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.comboBox_8.addItem(myresult[4][0])
         self.comboBox_9.addItem(myresult[5][0])
 
-    def afficher_arme(self):
-        mycursor = mydb.cursor()
 
+
+
+
+
+
+
+
+    #Lorsqu'on charge une partie, on affiche les armes choisies pour notre personnage.
+    def afficher_arme(self):
         mycursor = mydb.cursor()
         texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
         valueIdFiche = (str(self.label_nomPerso.text()),)
@@ -105,18 +137,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             mycursor.execute(texte,value)
         except ValueError:
             print("Damn! Il y a eu une erreur lors de l'exécution de la requête.")
-        
+
+        self.comboBox_10.clear()
+        self.comboBox_11.clear()
         myresult = mycursor.fetchall()
         self.comboBox_10.addItem(myresult[0][0])
         self.comboBox_11.addItem(myresult[1][0])
  
         
 
-    
-    def sauvergarder_discipline(self,comboBox):
-        print("hi")
+
         
 
+
+
+
+
+
+    #On affiche le texte du chapitre actuel.
     def afficher_chapitre(self):
         mycursor = mydb.cursor()
         self.textBrowser.clear
@@ -134,6 +172,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         myresult = mycursor.fetchall()
         self.textBrowser.setText(myresult[0][0])
 
+
+
+
+
+
+
+
+    #Fonction servant à charger une partie avec l'affichage de toute les informations.
     def charger(self):
         partieChoisie = str(self.comboBox_3.currentText())
         mycursor = mydb.cursor()
@@ -163,10 +209,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.afficher_choix_chapitre(self.chapitreActuel)
         self.afficher_discipline()
         self.afficher_arme()
-
+        self.label_partieSauvegarde.clear()
+        self.label_supression.clear()
 
    
 
+
+
+
+    #Supprimer la partie actuelle.
     def supprimer(self):
         mycursor = mydb.cursor()
         texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
@@ -186,8 +237,30 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.label_supression.setText("Partie supprimée.")
         except ValueError:
             print("Erreur lors de la requête.")
+
+        self.textBrowser.clear()
+        self.comboBox_2.clear()
+        self.comboBox_4.clear()
+        self.comboBox_5.clear()
+        self.comboBox_6.clear()
+        self.comboBox_7.clear()
+        self.comboBox_8.clear()
+        self.comboBox_9.clear()
+        self.comboBox_10.clear()
+        self.comboBox_11.clear()
+        self.lineEdit_nomPersonnage.clear()
+        self.afficher_charger_partie()
+
         
 
+
+
+
+
+
+
+    #Sauvegarder la partie actuelle. C'est la fonction la plus longue car je dois faire aussi une insertion pour chaque
+    #disciplines kai et chaques armes.
     def sauvegarder(self):
         mycursor = mydb.cursor()
         texteIdFiche = "SELECT id FROM fiche_personnage WHERE nom_personnage = (%s)"
@@ -201,6 +274,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         idFiche = myresult[0][0]
 
         idChapitre = self.chapitreActuel
+
+        if(idChapitre == 0):
+            idChapitre = 1
 
         texte = "INSERT INTO sauvegarde(id_fiche,id_chapitre) VALUES (%s,%s)"
         value = (idFiche,idChapitre)
@@ -387,7 +463,17 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         except ValueError:
             print("Erreur lors de la requête")
 
+
+
+
+
+
+
+
+
+    #On affiche les partie disponible à être chargées
     def afficher_charger_partie(self):
+        self.comboBox_3.clear()
         mycursor = mydb.cursor()
 
         texte = "SELECT sauvegarde.id, nom_personnage FROM sauvegarde INNER JOIN fiche_personnage ON sauvegarde.id_fiche = fiche_personnage.id ORDER BY id"
@@ -399,15 +485,20 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
         myresult = mycursor.fetchall()
         
-        #À COMPLÉTER
         for(nom_personnage) in myresult:
             self.comboBox_3.addItem(str(nom_personnage[1]))
 
         
 
+
+
+
+
+
+    #Créer une nouvelle partie avec le nom de personnage entréee.
     def nouvellePartie(self):
         
-        #À CORRIGER
+
         if self.lineEdit_nomPersonnage.text == "":
             label_erreurCreationPartie.setText("Veuillez choisir un nom.")
         else:
@@ -427,20 +518,28 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.afficher_disciplines_kai_defaut()
             self.afficher_nom_perso(value[0])
             self.afficher_armes_defaut()
+            self.lineEdit_nomPersonnage.clear()
+            self.label_partieSauvegarde.clear()
+            self.label_supression.clear()
 
 
 
+
+
+    #Afficher le nom du personnage!
     def afficher_nom_perso(self, nom):
         
         self.label_nomPerso.setText(nom)
 
-        #self.comboBox_4.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_4))
-        #self.comboBox_5.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_5))
-        #self.comboBox_6.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_6))
-        #self.comboBox_7.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_7))
-        #self.comboBox_8.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_8))
-        #self.comboBox_9.currentIndexChanged.connect(self.sauvergarder_discipline(self.comboBox_9))
 
+
+
+
+
+
+
+    #Lorsque l'on créer une nouvelle partie, on affiche des informations par défaut. Ici, on affiche les disciplines
+    #kai par défaut.
     def afficher_disciplines_kai_defaut(self):
         mycursor = mydb.cursor()
 
@@ -451,8 +550,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             print("Damn! Il y a eu une erreur lors de l'exécution de la requête.")
         
         myresult = mycursor.fetchall()
-        
-        #À COMPLÉTER
+
         for(nom_discipline) in myresult:
             self.comboBox_4.addItem(nom_discipline[0])
             self.comboBox_5.addItem(nom_discipline[0])
@@ -461,6 +559,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.comboBox_8.addItem(nom_discipline[0])
             self.comboBox_9.addItem(nom_discipline[0])
     
+
+
+
+
+
+
+
+
+    #Encore une fois, affiche les armes par défaut lors de la création d'une partie.
     def afficher_armes_defaut(self):
         mycursor = mydb.cursor()
 
@@ -484,11 +591,18 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         
             
 
-
+    #À chaque "coup de navigation", on affiche le numéro de chapitre.
     def afficher_no_chapitre(self):
         self.label_numero_chapitre.setText(str(self.chapitreActuel))
         
 
+
+
+
+
+
+
+    #Lorsqu'une nouvelle partie est créée, on affiche le premier chapitre.
     def afficher_chapitre_defaut(self):
         #On clear le texte avant. Pour pas avoir plein de trucs en même temps.
         self.textBrowser.clear
@@ -520,13 +634,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.afficher_no_chapitre()
 
 
+
+
+
+
     #Affichage des choix de chapitres par défaut.
     def afficher_choix_chapitre_defaut(self):
-        #On se créer un curseur pour parcourir la base de données
-        mycursor = mydb.cursor()
+
         self.comboBox_2.addItem("1")
 
         
+
+
+
 
 
 
@@ -541,8 +661,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             numeroChapitre = 1
         else:
             numeroChapitre = self.comboBox_2.currentText()
-
-        
 
         
         #On se créer un curseur pour parcourir la base de données
@@ -588,13 +706,10 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #On se créer un curseur pour parcourir la base de données
         mycursor = mydb.cursor()
 
-
         #La requête à éxécuter
         if(self.chapitreActuel == 0):
             #RAISON: dans ma base de donnée, le premier chapitre est à 1. C'est pour pas tout décaler.
             self.chapitreActuel = 1
-
-    
 
         texte = "SELECT no_chapitre_destination FROM lien_chapitre WHERE no_chapitre_origine = %s"
         valeur = (self.chapitreActuel,)
@@ -607,7 +722,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         #On va chercher les résultats.
         myresult = mycursor.fetchall()
         
-
         #comboBox_2 = combobox pour le choix des chapitres.
         for(no_chapitre_destination) in myresult:
             self.comboBox_2.addItem(str(no_chapitre_destination[0]))

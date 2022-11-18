@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Livre</string>
     </property>
     <widget class="QLabel" name="label">
      <property name="geometry">
@@ -60,7 +60,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Contrôles</string>
     </property>
     <widget class="QPushButton" name="boutonSauvegarde">
      <property name="geometry">
@@ -220,7 +220,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Chapitres</string>
     </property>
     <widget class="QLabel" name="label_2">
      <property name="geometry">
@@ -320,7 +320,7 @@
      </rect>
     </property>
     <property name="title">
-     <string>GroupBox</string>
+     <string>Fiche</string>
     </property>
     <widget class="QLabel" name="label_3">
      <property name="geometry">
@@ -570,7 +570,7 @@
        <x>60</x>
        <y>65</y>
        <width>191</width>
-       <height>31</height>
+       <height>51</height>
       </rect>
      </property>
      <property name="font">
