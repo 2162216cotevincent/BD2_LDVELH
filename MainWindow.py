@@ -24,7 +24,7 @@ class Ui_MainWindow(object):
         self.label.setGeometry(QtCore.QRect(10, 30, 51, 16))
         self.label.setObjectName("label")
         self.comboBox = QtWidgets.QComboBox(self.groupBox)
-        self.comboBox.setGeometry(QtCore.QRect(50, 30, 73, 22))
+        self.comboBox.setGeometry(QtCore.QRect(50, 30, 321, 22))
         self.comboBox.setObjectName("comboBox")
         self.groupBox_2 = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox_2.setGeometry(QtCore.QRect(10, 80, 771, 101))
